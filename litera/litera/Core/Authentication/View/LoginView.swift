@@ -45,6 +45,7 @@ struct LoginView: View {
                     .cornerRadius(20)
                     .padding(.top, 30)
                     .buttonStyle(.borderedProminent)
+                    .navigationBarBackButtonHidden(true)
                     
                     HStack {
                         Text("Don't have an account? ")
@@ -59,6 +60,7 @@ struct LoginView: View {
 
                     .navigationDestination(isPresented: $navigateToContentView) {
                         ContentView()
+                            .navigationBarBackButtonHidden(true)
                     }
                 }
                 .padding()
