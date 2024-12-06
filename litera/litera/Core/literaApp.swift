@@ -25,8 +25,9 @@ struct literaApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RegistrationView()
-                .environmentObject(authService)
+            GetStartedView()
+//            RegistrationView()
+//                .environmentObject(authService)
         }
     }
 }
