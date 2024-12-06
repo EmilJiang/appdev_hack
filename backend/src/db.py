@@ -38,15 +38,15 @@ class Book(db.Model):
 
 class User(db.Model):
     __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    entries = db.relationship("Entry", back_populates="user")
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    name = db.Column(db.String(255), unique = True, nullable = False)
+    username = db.Column(db.String(255), nullable = False)
+    entries = db.relationship("Entry", back_populates = "user")
 
     def serialize(self):
         return {
             "id": self.id,
+            "name": self.name,
             "username": self.username,
-            "password": self.password,
             "entries": [e.id for e in self.entries]
         }
