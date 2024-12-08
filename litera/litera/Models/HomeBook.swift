@@ -12,7 +12,8 @@ struct HomeBook: Identifiable {
     let title: String
     let author: String
     let imageName: String
-    let rating: Int
+    let rating: Double
+    let genre: String
 }
 
 struct Category: Identifiable {

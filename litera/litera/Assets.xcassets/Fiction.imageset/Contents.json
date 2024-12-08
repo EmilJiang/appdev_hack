@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "prateek-katyal-Tl0lYXcyT-A-unsplash-840x473.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
