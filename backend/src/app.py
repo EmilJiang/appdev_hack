@@ -1,6 +1,5 @@
-from db import db
-from db import User
-from db import Book
+import os
+from db import db, User, Book, Entry
 from flask import Flask, jsonify, request
 import json
 
@@ -24,22 +23,22 @@ def failure_response(message, code=404):
 
 # All AI code.
 
-# from openai import OpenAI
-# client = OpenAI(api_key= KEY)
+from openai import OpenAI
+client = OpenAI(api_key= os.environ.get("KEY"))
 
 # your routes here
-# def summarize(prompt, book):
-#     completion = client.chat.completions.create(
-#     model="gpt-4o",
-#     messages=[
-#         {"role": "system", "content": prompt},
-#         {
-#             "role": "user",
-#             "content": book
-#         }
-#         ]
-#     )
-#     print(completion.choices[0].message.content)
+def summarize(prompt, book):
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": prompt},
+        {
+            "role": "user",
+            "content": book
+        }
+        ]
+    )
+    return completion.choices[0].message.content
 
 @app.route("/") 
 def hello():
@@ -58,23 +57,23 @@ def get_books():
         books.append(book.serialize())
     return success_response({"books": books}, 200)
 
-@app.route("/api/books/", methods = ["POST"])
+@app.route("/api/books/", methods=["POST"])
 def create_book():
     """
     Endpoint for creating a new book.
     """
     body = json.loads(request.data)
-    if body == None:
-        return failure_request("Empty body", 400)
+    if body is None:
+        return failure_response("Empty body", 400)
     title = body.get("title")
     author = body.get("author")
-    summary = body.get("summary")
-    if not title or not author or not summary:
+    if not title or not author:
         return json.dumps({"error": "Missing parameters"}), 400
-    new_book = Book (
-        title = body.get("title"),
-        author = body.get("author"),
-        summary = body.get("summary")
+    summary = summarize("summarize this book", title)
+    new_book = Book(
+        title=title,
+        author=author,
+        summary=summary
     )
     db.session.add(new_book)
     db.session.commit()
@@ -156,13 +155,33 @@ def delete_user(id):
 
 @app.route("/api/entries/", methods=["GET"])
 def get_entries():
-    entries = Courses.query.all()
+    """
+    Endpoint for getting all entries.
+    """
+    entries = Entry.query.all()
     return success_response([entry.serialize() for entry in entries])
 
 @app.route("/api/entries/", methods=["POST"])
 def post_entries():
+    """
+    Endpoint for creating a new entry.
+    """
     post_body = json.loads(request.data)
-    
-    
+    user_id = post_body.get("user_id")
+    book_id = post_body.get("book_id")
+    review = post_body.get("review")
+
+    if user_id is None or book_id is None:
+        return failure_response("Missing user_id or book_id", 400)
+
+    new_entry = Entry(
+        user_id=user_id,
+        book_id=book_id,
+        review=review
+    )
+    db.session.add(new_entry)
+    db.session.commit()
+    return success_response(new_entry.serialize(), 201)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

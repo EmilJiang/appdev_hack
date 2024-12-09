@@ -2,6 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+user_books = db.Table('user_books',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('book_id', db.Integer, db.ForeignKey('books.id'), primary_key=True)
+)
+
 class Entry(db.Model):
     __tablename__ = "entries"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -26,6 +31,7 @@ class Book(db.Model):
     author = db.Column(db.String(255), nullable=False)
     summary = db.Column(db.Text, nullable=True)
     entries = db.relationship("Entry", back_populates="book")
+    users = db.relationship('User', secondary=user_books, back_populates='books')
 
     def serialize(self):
         return {
@@ -42,6 +48,7 @@ class User(db.Model):
     name = db.Column(db.String(255), unique = True, nullable = False)
     username = db.Column(db.String(255), nullable = False)
     entries = db.relationship("Entry", back_populates = "user")
+    books = db.relationship('Book', secondary=user_books, back_populates='users')
 
     def serialize(self):
         return {
